@@ -1,0 +1,11 @@
+REVOKE ALL ON FUNCTION public.handle_new_user() FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.handle_swipe() FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.bump_match() FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.set_signo() FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.touch_updated_at() FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.is_blocked(uuid, uuid) FROM PUBLIC, anon;
+REVOKE ALL ON FUNCTION public.in_match(uuid, uuid) FROM PUBLIC, anon;
+REVOKE ALL ON FUNCTION public.buscar_candidatos(int) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.is_blocked(uuid, uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.in_match(uuid, uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.buscar_candidatos(int) TO authenticated;
