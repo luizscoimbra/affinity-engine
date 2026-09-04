@@ -1,14 +1,14 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 
-export interface IconProps extends React.SVGProps<SVGSVGElement> {
+export interface IconProps extends Omit<React.SVGProps<SVGSVGElement>, "ref"> {
   className?: string;
   active?: boolean;
   animated?: boolean;
   glow?: boolean;
 }
 
-export function DiscoverIcon({ className, active, animated = true, ...props }: IconProps) {
+export function DiscoverIcon({ className, active, animated = true, glow: _glow, ...props }: IconProps) {
   return (
     <svg
       className={cn(
@@ -81,7 +81,7 @@ export function MatchesIcon({ className, active, animated = true, ...props }: Ic
   );
 }
 
-export function ProfileIcon({ className, active, ...props }: IconProps) {
+export function ProfileIcon({ className, active, animated: _animated, glow: _glow, ...props }: IconProps) {
   return (
     <svg
       className={cn(
@@ -158,7 +158,7 @@ export function SparklesIcon({
   );
 }
 
-export function XIcon({ className, ...props }: IconProps) {
+export function XIcon({ className, active: _active, animated: _animated, glow: _glow, ...props }: IconProps) {
   return (
     <svg
       className={cn("transition-transform duration-200 hover:rotate-90", className)}
@@ -176,7 +176,7 @@ export function XIcon({ className, ...props }: IconProps) {
   );
 }
 
-export function UndoIcon({ className, ...props }: IconProps) {
+export function UndoIcon({ className, active: _active, animated: _animated, glow: _glow, ...props }: IconProps) {
   return (
     <svg
       className={cn("transition-transform duration-200 hover:-rotate-45", className)}
@@ -194,7 +194,7 @@ export function UndoIcon({ className, ...props }: IconProps) {
   );
 }
 
-export function SendIcon({ className, ...props }: IconProps) {
+export function SendIcon({ className, active: _active, animated: _animated, glow: _glow, ...props }: IconProps) {
   return (
     <svg
       className={cn("transition-transform duration-200 hover:translate-x-0.5 hover:-translate-y-0.5", className)}
@@ -212,7 +212,7 @@ export function SendIcon({ className, ...props }: IconProps) {
   );
 }
 
-export function ArrowLeftIcon({ className, ...props }: IconProps) {
+export function ArrowLeftIcon({ className, active: _active, animated: _animated, glow: _glow, ...props }: IconProps) {
   return (
     <svg
       className={cn("transition-transform duration-200 hover:-translate-x-1", className)}
@@ -234,6 +234,8 @@ export function StarIcon({
   className,
   filled,
   glow = true,
+  active: _active,
+  animated: _animated,
   ...props
 }: IconProps & { filled?: boolean }) {
   return (
@@ -256,7 +258,7 @@ export function StarIcon({
   );
 }
 
-export function SettingsIcon({ className, ...props }: IconProps) {
+export function SettingsIcon({ className, active: _active, animated: _animated, glow: _glow, ...props }: IconProps) {
   return (
     <svg
       className={cn("transition-transform duration-500 hover:rotate-90", className)}
@@ -274,7 +276,7 @@ export function SettingsIcon({ className, ...props }: IconProps) {
   );
 }
 
-export function CameraIcon({ className, ...props }: IconProps) {
+export function CameraIcon({ className, active: _active, animated: _animated, glow: _glow, ...props }: IconProps) {
   return (
     <svg
       className={cn("transition-transform duration-200 hover:scale-105", className)}
@@ -292,7 +294,7 @@ export function CameraIcon({ className, ...props }: IconProps) {
   );
 }
 
-export function MapPinIcon({ className, ...props }: IconProps) {
+export function MapPinIcon({ className, active: _active, animated: _animated, glow: _glow, ...props }: IconProps) {
   return (
     <svg
       className={cn("transition-transform duration-200 hover:scale-110", className)}
@@ -310,7 +312,7 @@ export function MapPinIcon({ className, ...props }: IconProps) {
   );
 }
 
-export function LogOutIcon({ className, ...props }: IconProps) {
+export function LogOutIcon({ className, active: _active, animated: _animated, glow: _glow, ...props }: IconProps) {
   return (
     <svg
       className={cn("transition-transform duration-200 hover:translate-x-1", className)}
@@ -329,7 +331,7 @@ export function LogOutIcon({ className, ...props }: IconProps) {
   );
 }
 
-export function TrashIcon({ className, ...props }: IconProps) {
+export function TrashIcon({ className, active: _active, animated: _animated, glow: _glow, ...props }: IconProps) {
   return (
     <svg
       className={cn("transition-transform duration-200 hover:scale-110 hover:text-destructive", className)}
@@ -349,7 +351,7 @@ export function TrashIcon({ className, ...props }: IconProps) {
   );
 }
 
-export function ChatIcon({ className, active, ...props }: IconProps) {
+export function ChatIcon({ className, active, animated: _animated, glow: _glow, ...props }: IconProps) {
   return (
     <svg
       className={cn("transition-all duration-300", active && "scale-105 text-primary", className)}
@@ -366,7 +368,7 @@ export function ChatIcon({ className, active, ...props }: IconProps) {
   );
 }
 
-export function MessageCircleIcon({ className, ...props }: IconProps) {
+export function MessageCircleIcon({ className, active: _active, animated: _animated, glow: _glow, ...props }: IconProps) {
   return (
     <svg
       className={cn("transition-transform duration-200 hover:scale-110", className)}

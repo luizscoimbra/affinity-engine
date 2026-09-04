@@ -28,9 +28,9 @@ export function PhotoGallery({
   const photoPaths = photos.map((p) => p.path).filter(Boolean);
   const { data: signedUrls } = useUrlsAssinadas(photoPaths);
 
-  const getPhotoUrl = (path: string | null | undefined): string => {
-    if (!path) return "";
-    return signedUrls?.[path] ?? "";
+  const getPhotoUrl = (path: string | null | undefined): string | undefined => {
+    if (!path) return undefined;
+    return signedUrls?.[path] ?? undefined;
   };
 
   const slots = Array.from({ length: maxPhotos }, (_, i) => {
