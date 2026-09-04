@@ -1,0 +1,24 @@
+name = "luizscoimbra-affinity-engine"
+main = ".output/server/index.mjs"
+compatibility_date = "2026-08-28"
+compatibility_flags = ["nodejs_compat"]
+no_bundle = true
+account_id = "ebaecb6cae78eb043ecdc3ba6ac959a3"
+
+[assets]
+binding = "ASSETS"
+directory = ".output/public"
+
+[[rules]]
+type = "ESModule"
+globs = ["**/*.js", "**/*.mjs"]
+
+[vars]
+SUPABASE_PROJECT_ID = "rxayuhqdpxcgufnolifg"
+SUPABASE_URL = "https://c--2ed4ff71-7d4a-4010-8167-de8d304aebe1-prod.lovable.cloud"
+VITE_SUPABASE_URL = "https://c--2ed4ff71-7d4a-4010-8167-de8d304aebe1-prod.lovable.cloud"
+VITE_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_AXcm5p0EajLPY8KlRgE3dg_DvbBE_G3"
+
+# Chaves sensíveis - configure como secrets no dashboard
+# SUPABASE_SERVICE_ROLE_KEY = "..."
+# LOVABLE_CRON_SECRET = "..."

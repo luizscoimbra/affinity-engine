@@ -10,21 +10,13 @@ type SponsoredProfile = Database["public"]["Tables"]["sponsored_profiles"]["Row"
 type Candidate = Database["public"]["Functions"]["buscar_candidatos"]["Returns"][number];
 
 export async function getMyProfile(userId: string) {
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", userId)
-    .single();
+  const { data, error } = await supabase.from("profiles").select("*").eq("id", userId).single();
   if (error) throw error;
   return data;
 }
 
 export async function upsertProfile(profile: Database["public"]["Tables"]["profiles"]["Insert"]) {
-  const { data, error } = await supabase
-    .from("profiles")
-    .upsert(profile)
-    .select()
-    .single();
+  const { data, error } = await supabase.from("profiles").upsert(profile).select().single();
   if (error) throw error;
   return data;
 }
@@ -38,16 +30,15 @@ export async function getProfileInterests(profileId: string) {
   return data;
 }
 
-export async function upsertInterests(interests: Database["public"]["Tables"]["profile_interests"]["Insert"][]) {
+export async function upsertInterests(
+  interests: Database["public"]["Tables"]["profile_interests"]["Insert"][],
+) {
   if (interests.length === 0) return [];
   const firstInterest = interests[0];
   if (!firstInterest) return [];
   const profileId = firstInterest.profile_id;
   await supabase.from("profile_interests").delete().eq("profile_id", profileId);
-  const { data, error } = await supabase
-    .from("profile_interests")
-    .insert(interests)
-    .select();
+  const { data, error } = await supabase.from("profile_interests").insert(interests).select();
   if (error) throw error;
   return data;
 }
@@ -79,10 +70,7 @@ export async function uploadPhoto(userId: string, file: File, position: number) 
   const existingForPosition = existing.find((p) => p.position === position);
 
   if (existingForPosition) {
-    await supabase
-      .from("profile_photos")
-      .update({ path })
-      .eq("id", existingForPosition.id);
+    await supabase.from("profile_photos").update({ path }).eq("id", existingForPosition.id);
   } else {
     await supabase.from("profile_photos").insert({
       profile_id: userId,
@@ -94,11 +82,17 @@ export async function uploadPhoto(userId: string, file: File, position: number) 
   return { path, url: signedData?.signedUrl ?? null };
 }
 
-export function getPhotoUrl(path: string | null | undefined): string {
-  if (!path) return "";
-  if (path.startsWith("http://") || path.startsWith("https://")) return path;
-  const { data } = supabase.storage.from("fotos-perfil").getPublicUrl(path);
-  return data?.publicUrl ?? "";
+export async function deletePhoto(userId: string, photoId: string, path: string) {
+  await supabase.storage.from("fotos-perfil").remove([path]);
+  const { error } = await supabase.from("profile_photos").delete().eq("id", photoId);
+  if (error) throw error;
+}
+
+export async function reorderPhotos(photos: { id: string; position: number }[]) {
+  const updates = photos.map((p) =>
+    supabase.from("profile_photos").update({ position: p.position }).eq("id", p.id),
+  );
+  await Promise.all(updates);
 }
 
 export async function getCandidates(limit = 20) {
@@ -108,7 +102,9 @@ export async function getCandidates(limit = 20) {
 }
 
 export async function swipe(targetId: string, liked: boolean) {
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
   const { data, error } = await supabase
@@ -135,7 +131,9 @@ export async function swipe(targetId: string, liked: boolean) {
 }
 
 export async function getMatches() {
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
   const { data, error } = await supabase
@@ -148,22 +146,14 @@ export async function getMatches() {
 }
 
 export async function getMatchById(matchId: string) {
-  const { data, error } = await supabase
-    .from("matches")
-    .select("*")
-    .eq("id", matchId)
-    .single();
+  const { data, error } = await supabase.from("matches").select("*").eq("id", matchId).single();
   if (error) throw error;
   return data;
 }
 
 export async function getMatchProfile(match: Match, userId: string) {
   const otherId = match.user_a === userId ? match.user_b : match.user_a;
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", otherId)
-    .single();
+  const { data, error } = await supabase.from("profiles").select("*").eq("id", otherId).single();
   if (error) throw error;
 
   const { data: photos } = await supabase
@@ -190,8 +180,22 @@ export async function getMessages(matchId: string) {
   return data;
 }
 
+export async function getLastMessage(matchId: string): Promise<Message | null> {
+  const { data, error } = await supabase
+    .from("messages")
+    .select("*")
+    .eq("match_id", matchId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) return null;
+  return data;
+}
+
 export async function sendMessage(matchId: string, body: string) {
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
   const { data, error } = await supabase
@@ -204,7 +208,9 @@ export async function sendMessage(matchId: string, body: string) {
 }
 
 export async function markMessagesRead(matchId: string) {
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return;
 
   await supabase
@@ -215,8 +221,36 @@ export async function markMessagesRead(matchId: string) {
     .is("read_at", null);
 }
 
+export async function unmatch(matchId: string) {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+
+  const { error } = await supabase.from("matches").delete().eq("id", matchId);
+  if (error) throw error;
+}
+
+export async function getUnreadCount(matchId: string): Promise<number> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return 0;
+
+  const { count, error } = await supabase
+    .from("messages")
+    .select("*", { count: "exact", head: true })
+    .eq("match_id", matchId)
+    .neq("sender_id", user.id)
+    .is("read_at", null);
+  if (error) return 0;
+  return count ?? 0;
+}
+
 export async function blockUser(blockedId: string) {
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
   const { error } = await supabase
@@ -226,7 +260,9 @@ export async function blockUser(blockedId: string) {
 }
 
 export async function reportUser(reportedId: string, reason: string, details?: string) {
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
   const { error } = await supabase
@@ -246,7 +282,9 @@ export async function getSponsoredProfiles() {
 }
 
 export async function trackAdEvent(sponsoredId: string, placement: string, eventType: string) {
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   await supabase.from("ad_events").insert({
     user_id: user?.id ?? null,
     sponsored_id: sponsoredId,
@@ -269,10 +307,8 @@ export function subscribeToMessages(matchId: string, callback: (msg: Message) =>
 export function subscribeToMatches(callback: (match: Match) => void) {
   return supabase
     .channel("matches")
-    .on(
-      "postgres_changes",
-      { event: "INSERT", schema: "public", table: "matches" },
-      (payload) => callback(payload.new as Match),
+    .on("postgres_changes", { event: "INSERT", schema: "public", table: "matches" }, (payload) =>
+      callback(payload.new as Match),
     )
     .subscribe();
 }
